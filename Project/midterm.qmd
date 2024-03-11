@@ -1,0 +1,47 @@
+---
+title: |
+  Comparing antigenic distance metrics for influenza against genetic and
+  antigenic history
+subtitle: "EPID 8200 project proposal"
+author: "Zane Billings"
+date: last-modified
+date-format: iso
+---
+
+# Project summary
+
+Influenza A evolves rapidly and causes seasonal epidemics in temperate climates.
+Subsequent epidemics are often induced by immune escape and the spread of a
+novel variant. The antigenic distance between variants of influenza can be
+calculated using multiple different methods, and is not always equivalent to
+the genetic or evolutionary distance between to strains. There is no consensus
+on which distance calculation methods most accurately map to immune
+phenotypes and immune escape variants. We propose to calculate many different
+distance metrics on the same database, including antigenic cartography. We can
+then use the sequences to reconstruct a maximum likelihood evolutionary history,
+and compare distance-based evolutionary trees within a likelihood framework to
+determine which metrics most accurately reflect the evolutionary history of
+the immune escape variant strains.
+
+{{< pagebreak >}}
+
+# Significance
+
+# Approach
+
+* Descriptive statistics of different distance metrics.
+	- Hamming distance
+	- Grantham's or similar distance
+	- pEpitope
+	- Grantham's with p-Epitope
+	- Cartography
+	- The one with the bands
+	- Need to look up more
+* Construct a maximum likelihood tree using the nucleotide sequence.
+* Construct pairwise distance matrices and associated distance trees using
+multiple different measures of distance.
+* Calculate the likelihood of each distance tree under the same likelihood
+framework, so we can compare which distance trees are most similar to the
+tree inferred from sequences.
+* Major comparison: how similar is the cartography-based distance tree to the
+sequence-based ML tree?
