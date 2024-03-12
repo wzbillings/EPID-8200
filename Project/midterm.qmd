@@ -27,8 +27,17 @@ the immune escape variant strains.
 
 # Significance
 
+The natural history of influenza is shaped predominantly by rapid evolution due
+to host selective pressures, along with periodic recombination events which lead
+to the proliferation of novel variants. We call these evolutionary processes
+antigenic drift and antigenic shift respectively. Effectively vaccinating
+against influenza requires careful consideration of these evolutionary processes,
+and current vaccines rely on predicting variants of concern which are expected
+to circulate in the upcoming season.
+
 # Approach
 
+* Dataset description
 * Descriptive statistics of different distance metrics.
 	- Hamming distance
 	- Grantham's or similar distance
