@@ -16,6 +16,8 @@ execute:
   echo: false
   message: false
   warning: false
+bibliography: Midterm-Refs.bib
+csl: aje.csl
 ---
 
 ```{r}
@@ -57,10 +59,10 @@ the immune escape variant strains.
 The natural history of influenza is shaped predominantly by rapid evolution due
 to host selective pressures, along with periodic recombination events which lead
 to the proliferation of novel variants. We call these evolutionary processes
-antigenic drift and antigenic shift respectively. Effectively vaccinating
+antigenic drift and antigenic shift respectively. [@kim2018] Effectively vaccinating
 against influenza requires careful consideration of these evolutionary processes,
 and current vaccines rely on predicting variants of concern which are expected
-to circulate in the upcoming season.
+to circulate in the upcoming season. [@erbelding2018]
 
 Current influenza vaccines rarely elicit strong responses to many different
 strains of influenza, and so are less effective when predictions for circulating
@@ -68,11 +70,12 @@ strains are incorrect, or when novel viruses emerge due to recombination as in
 2009. Developing a broadly protective influenza vaccine which responds to many
 different strains of influenza is, therefore, a crucial goal for reduction of
 the burden of current and future influenza epidemics.
+[@krammer2019c; @allen2021; @dugan2020a; @hinojosa2020; @li2021; @jang2021]
 
 However, measuring the breadth of a vaccine response is difficult, and many
 proposed measures involve using the year of isolation of influenza viruses as
-a proxy for sequence dissimilarity due to antigenic drift. Especially for H1N1,
-which has two distinct historical lineages, year of isolation is an adequate
+a proxy for sequence dissimilarity due to antigenic drift. [@yang2020; @auladell2022] Especially for H1N1,
+which has two distinct historical lineages, year of isolation is an inadequate
 measure of antigenic distance. However, there are many different measures of
 genetic and antigenic distance, with no clear consensus on which is best for
 influenza. Comparing the similarity of antigenic distance measurements and their
@@ -83,8 +86,11 @@ improving methods for quantifying the breadth of vaccine response.
 
 We will combine data from an influenza cohort study along with publicly avaiable
 influenza sequence data in order to compare multiple measurements of genetic and
-antigenic distance. The cohort data we will use is comprised of volunteers
-enrolled at three different study sites from September 2013 ongoing. The study design is a prospective, open cohort study with one treatment
+antigenic distance.The cohort data we will use is comprised of volunteers
+enrolled at three different study sites from September 2013 ongoing. The cohort
+and serological methods have been described previously. [@nunez2017; @abreu2020]
+
+Briefly, the study design is a prospective, open cohort study with one treatment
 arm. Recruited individuals completed a questionnaire at enrollment to provide
 demographic information (including sex, race, age, comorbidities, and prior
 vaccination history), gave a pre-vaccination serum sample, and received a
@@ -97,7 +103,7 @@ were age 65 or older were allowed to choose either FluZone or FluZone High Dose
 
 For our study, we selected records that had both a pre and post-vaccination
 serum time point. We also only used records from study years 2013 up to March 2020, as the historical panel was reduced in subsequent years due to concerns arising from the COVID-19 pandemic. @Tbl-demographics shows demographics and counts for participants who were selected for inclusion in our study. We will
-also only consider responses to influenza A, and we will treat H1N1 and H3N2
+also only consider responses to influenza A and responses to the SD vaccine. We will treat H1N1 and H3N2
 as independent lineages for the purpose of our analyses.
 
 Researchers conducted hemagglutination inhibition (HAI) assays to a panel of
