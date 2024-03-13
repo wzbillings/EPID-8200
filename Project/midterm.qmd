@@ -11,8 +11,29 @@ author:
   - Andreas Handel
 date: last-modified
 date-format: iso
-format: pdf
+format: docx
+execute:
+  echo: false
+  message: false
+  warning: false
 ---
+
+```{r}
+#| label: setup
+
+library(gtsummary)
+library(flextable)
+
+# https://stackoverflow.com/questions/57175351/flextable-autofit-in-a-rmarkdown-to-word-doc-causes-table-to-go-outside-page-mar
+FitFlextableToPage <- function(ft, pgwidth = 6){
+
+  ft_out <- ft %>% autofit()
+
+  ft_out <- width(ft_out, width = dim(ft_out)$widths*pgwidth /(flextable_dim(ft_out)$widths))
+  return(ft_out)
+}
+```
+
 
 # Project summary
 
@@ -75,7 +96,7 @@ were age 65 or older were allowed to choose either FluZone or FluZone High Dose
 (HD). Individuals were allowed to return in subsequent years.
 
 For our study, we selected records that had both a pre and post-vaccination
-serum time point. We also only used records from study years 2013 up to March 2020, as the historical panel was reduced in subsequent years due to concerns arising from the COVID-19 pandemic. @Tab-demographics shows demographics and counts for participants who were selected for inclusion in our study. We will
+serum time point. We also only used records from study years 2013 up to March 2020, as the historical panel was reduced in subsequent years due to concerns arising from the COVID-19 pandemic. @Tbl-demographics shows demographics and counts for participants who were selected for inclusion in our study. We will
 also only consider responses to influenza A, and we will treat H1N1 and H3N2
 as independent lineages for the purpose of our analyses.
 
@@ -83,8 +104,8 @@ Researchers conducted hemagglutination inhibition (HAI) assays to a panel of
 historical strains, which varied slightly over the duration of the study due to
 funding and virus availibilities. The strains they used, along with the UniProt
 and/or GISAID acession numbers for the protein sequences are given in
-@tab-sequence-numbers. The years for which each strain was used are shown in
-@tab-strain-years.
+@tbl-sequence-numbers. The years for which each strain was used are shown in
+@tbl-strain-years.
 
 In order to compare genetic distance measures, we will first build a maximum
 likelihood (ML) phylogenetic tree using the RNA sequences for each strain.
@@ -127,33 +148,69 @@ from which we can easily calculate Euclidean distance measurements. We computed
 cartographic maps in 1 -- 5 dimensions, and based on the relative error for each,
 we determined that 2 dimensions were suitable, which matches previous findings.
 
+{{< pagebreak >}}
+
 # Data tables
 
 ```{r}
-#| label: tab-demographics
+#| label: tbl-demographics
 #| tbl-cap: |
 #|   Age, sex, race, dose, and study site distributions for the selected study
 #|   years. Notice that the study was conducted at the FL and PA study sites
 #|   from fall 2013 through spring 2017, and at the UGA study site beginning in
-#|   January 2017 onwards. 
-knitr::include_graphics(here::here("Results/table1-midterm.png"))
+#|   January 2017 onwards.
+readr::read_rds(here::here("results", "sd-table1.Rds")) |>
+	gtsummary::as_flex_table() |>
+	flextable::compose(
+		i = 1, j = 1, part = "header",
+		value = flextable::as_paragraph("")
+	) |>
+	flextable::width(
+		j = 1,
+		width = .9
+	) |>
+	flextable::width(
+		j = 2:8,
+		width = 0.8
+	)
 ```
 
+{{< pagebreak >}}
+
 ```{r}
-#| label: tab-strain-years
+#| label: tbl-strain-years
+#| tbl-cap: |
+#|   Strains used for HAI assays on cohort study samples, and the seasons in
+#|   which those strains were used.
+short_names_used <-
+	readr::read_rds(here::here("data", "viruses_used.rds")) |>
+	dplyr::pull(strain_short)
 
 years_tab <-
 	readr::read_rds(here::here("results", "virus_accession.rds")) |>
 	dplyr::filter(short_name %in% short_names_used) |>
-	dplyr::select(short_name, c(`2014`:`2019`))
+	dplyr::select(short_name, c(`2014`:`2019`)) |>
+	# Format the seasons nicely
+	dplyr::rename_with(
+		.fn = function(x) {
+			n <- as.numeric(substring(x, 2, 4))
+			o <- paste0(n, "/", n + 1)
+			return(o)
+			},
+		.cols = -short_name
+	)
 
-col_matrix <- ifelse(years_tab[, -1] == "x", "gray", "white")
+col_matrix <- ifelse(
+	apply(years_tab[, -1] == "x", c(1, 2), isTRUE),
+	"gray",
+	"white"
+)
 
 years_tab |>
 	flextable::flextable() |>
 	flextable::set_header_labels(
 		values = list(
-			short_name = "Abbreviation"
+			short_name = "Strain"
 		)
 	) |>
 	flextable::bg(
@@ -162,29 +219,30 @@ years_tab |>
 	) |>
 	flextable::color(
 		j = -1,
-		col = col_matrix
+		color = col_matrix
+	) |>
+	flextable::width(
+		j = 1,
+		width = .8
 	) |>
 	flextable::width(
 		j = -1,
-		width = .5
+		width = .72
 	) |>
 	flextable::border_inner_v() |>
 	flextable::border_inner_h()
-	#flextable::add_header_row(top = TRUE,
-	#             values = c(" ", "Season Used in HAI panel"),
-	#             colwidths = c(5, 6)) |>
-	#flextable::merge_at(j = 1:4, part = "footer") |>
-	# flextable::align(j = 6:11, align = "center") |>
-	flextable::autofit()
 
 ```
 
-```{r}
-#| label: tab-sequence-numbers
-short_names_used <-
-	readr::read_rds(here::here("data", "viruses_used.rds")) |>
-	dplyr::pull(strain_short)
+{{< pagebreak >}}
 
+```{r}
+#| label: tbl-sequence-numbers
+#| tbl-cap: |
+#|   The strains used in the study along with the GISAID or UniProt accession
+#|   numbers for the protein sequence of the virus stock used in the lab. For
+#|   one sequence, the full length is not available. The nucleic acid sequences
+#|   are also available for each of the strains, from the provided sources.
 readr::read_rds(here::here("results", "virus_accession.rds")) |>
 	dplyr::filter(short_name %in% short_names_used) |>
 	dplyr::select(-c(`2014`:`2019`), -analysis_name) |>
@@ -198,20 +256,13 @@ readr::read_rds(here::here("results", "virus_accession.rds")) |>
 			ha_source = "HA Sequence Source"
 		)
 	) |>
-	# flextable::add_footer(
-	# 	top = FALSE, 
-	# 	season = paste0(
-	# 		"If the full length sequence was not available the numbering of the",
-	# 		"residues that are available are listed."
-	# 	)
-	# ) |>
-	#flextable::add_header_row(top = TRUE,
-	#             values = c(" ", "Season Used in HAI panel"),
-	#             colwidths = c(5, 6)) |>
-	#flextable::merge_at(j = 1:4, part = "footer") |>
-	# flextable::align(j = 6:11, align = "center") |>
-	flextable::autofit()
+	flextable::width(
+		j = 1:4,
+		width = c(2.7, 0.8, 1, 1.5)
+	)
 ```
+
+{{< pagebreak >}}
 
 # References
 
