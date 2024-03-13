@@ -3,9 +3,15 @@ title: |
   Comparing antigenic distance metrics for influenza against genetic and
   antigenic history
 subtitle: "EPID 8200 project proposal"
-author: "Zane Billings"
+author:
+  - W. Zane Billings
+  - Amanda Skarlupka
+  - Lambodhar Damodaran
+  - Justin Bahl
+  - Andreas Handel
 date: last-modified
 date-format: iso
+format: pdf
 ---
 
 # Project summary
@@ -35,22 +41,178 @@ against influenza requires careful consideration of these evolutionary processes
 and current vaccines rely on predicting variants of concern which are expected
 to circulate in the upcoming season.
 
+Current influenza vaccines rarely elicit strong responses to many different
+strains of influenza, and so are less effective when predictions for circulating
+strains are incorrect, or when novel viruses emerge due to recombination as in
+2009. Developing a broadly protective influenza vaccine which responds to many
+different strains of influenza is, therefore, a crucial goal for reduction of
+the burden of current and future influenza epidemics.
+
+However, measuring the breadth of a vaccine response is difficult, and many
+proposed measures involve using the year of isolation of influenza viruses as
+a proxy for sequence dissimilarity due to antigenic drift. Especially for H1N1,
+which has two distinct historical lineages, year of isolation is an adequate
+measure of antigenic distance. However, there are many different measures of
+genetic and antigenic distance, with no clear consensus on which is best for
+influenza. Comparing the similarity of antigenic distance measurements and their
+ability to reconstruct the evolutionary history of influenza is necessary for
+improving methods for quantifying the breadth of vaccine response.
+
 # Approach
 
-* Dataset description
-* Descriptive statistics of different distance metrics.
-	- Hamming distance
-	- Grantham's or similar distance
-	- pEpitope
-	- Grantham's with p-Epitope
-	- Cartography
-	- The one with the bands
-	- Need to look up more
-* Construct a maximum likelihood tree using the nucleotide sequence.
-* Construct pairwise distance matrices and associated distance trees using
-multiple different measures of distance.
-* Calculate the likelihood of each distance tree under the same likelihood
-framework, so we can compare which distance trees are most similar to the
-tree inferred from sequences.
-* Major comparison: how similar is the cartography-based distance tree to the
-sequence-based ML tree?
+We will combine data from an influenza cohort study along with publicly avaiable
+influenza sequence data in order to compare multiple measurements of genetic and
+antigenic distance. The cohort data we will use is comprised of volunteers
+enrolled at three different study sites from September 2013 ongoing. The study design is a prospective, open cohort study with one treatment
+arm. Recruited individuals completed a questionnaire at enrollment to provide
+demographic information (including sex, race, age, comorbidities, and prior
+vaccination history), gave a pre-vaccination serum sample, and received a
+seasonal influenza vaccine. Individuals returned for a followup visit with a
+target timeframe of 21 or 28 days post-vaccination (depending on the year) and
+gave a second serum sample. Individuals who were under the age of 65 received
+the standard dose (SD) FluZone (Sanofi Pasteur) vaccine, while individuals who
+were age 65 or older were allowed to choose either FluZone or FluZone High Dose
+(HD). Individuals were allowed to return in subsequent years.
+
+For our study, we selected records that had both a pre and post-vaccination
+serum time point. We also only used records from study years 2013 up to March 2020, as the historical panel was reduced in subsequent years due to concerns arising from the COVID-19 pandemic. @Tab-demographics shows demographics and counts for participants who were selected for inclusion in our study. We will
+also only consider responses to influenza A, and we will treat H1N1 and H3N2
+as independent lineages for the purpose of our analyses.
+
+Researchers conducted hemagglutination inhibition (HAI) assays to a panel of
+historical strains, which varied slightly over the duration of the study due to
+funding and virus availibilities. The strains they used, along with the UniProt
+and/or GISAID acession numbers for the protein sequences are given in
+@tab-sequence-numbers. The years for which each strain was used are shown in
+@tab-strain-years.
+
+In order to compare genetic distance measures, we will first build a maximum
+likelihood (ML) phylogenetic tree using the RNA sequences for each strain.
+Then, we will calculate the pairwise distances between strains using several
+different methods: Hamming distance, Levenshtein distance, Grantham's distance,
+$p$-epitope distance, and normalized Euclidean distance from antigenic
+cartography (see following section). Then, we can use each of the computed
+distance matrices to build a distance-based tree via neighbor joining. The
+likelihood of the resulting distance-based tree can be calculated under the
+same framework as the ML tree, and we can use a likelihood ratio test to
+determine whether the distance-based tree is significantly worse than the
+ML tree. Note that we can easily extend our proposed methods to include any
+number of different genetic or antigenic distance metrics, but as this is a
+proof of concept study, we limited our concern to these metrics.
+
+We will also check whether the ML tree reflects what we know about evolutionary
+history. Since the strains we will use emerged in a specific and known order, we
+can compare the inferred phylogeny based on sequence distance to the true
+phylodynamic history. In particular, comparing the likelihoods of the ML and
+cartography-based tree should give us insight into how similar the genetic and
+antigenic patterns of evolution are for both H1N1 and H3N2 vaccine strains. We
+can also compare the trees based on genetic distance measurements to the
+tree based on the cartographic distance using a likelihood ratio test, so we can
+determine which measures of genetic distance are similar to the genetic and
+antigenic evolution patterns we detect in the data.
+
+Finally, we will also conduct correlation and reliability analyses on the
+different measures of antigenic distance to assess how similar they are to each
+other. Our tree-based analysis can tell us which simple measures are best at
+reconstructing the genetic or antigenic history of the virus. Susequent
+correlation and reliability analyses can provide additional information about
+how similar different measurements are and may help highlight why certain
+measurements are more similar to the genetic or cartographic phylogenies.
+
+We conducted antigenic cartography using the post-vaccination cohort data
+described previously. We used the Racmacs R package to construct the
+cartographic maps from the HAI data, which employs an iterative multidimensional
+scaling (MDS) process to reduce the matrix of measurements into fewer dimensions,
+from which we can easily calculate Euclidean distance measurements. We computed
+cartographic maps in 1 -- 5 dimensions, and based on the relative error for each,
+we determined that 2 dimensions were suitable, which matches previous findings.
+
+# Data tables
+
+```{r}
+#| label: tab-demographics
+#| tbl-cap: |
+#|   Age, sex, race, dose, and study site distributions for the selected study
+#|   years. Notice that the study was conducted at the FL and PA study sites
+#|   from fall 2013 through spring 2017, and at the UGA study site beginning in
+#|   January 2017 onwards. 
+knitr::include_graphics(here::here("Results/table1-midterm.png"))
+```
+
+```{r}
+#| label: tab-strain-years
+
+years_tab <-
+	readr::read_rds(here::here("results", "virus_accession.rds")) |>
+	dplyr::filter(short_name %in% short_names_used) |>
+	dplyr::select(short_name, c(`2014`:`2019`))
+
+col_matrix <- ifelse(years_tab[, -1] == "x", "gray", "white")
+
+years_tab |>
+	flextable::flextable() |>
+	flextable::set_header_labels(
+		values = list(
+			short_name = "Abbreviation"
+		)
+	) |>
+	flextable::bg(
+		j = -1,
+		bg = col_matrix
+	) |>
+	flextable::color(
+		j = -1,
+		col = col_matrix
+	) |>
+	flextable::width(
+		j = -1,
+		width = .5
+	) |>
+	flextable::border_inner_v() |>
+	flextable::border_inner_h()
+	#flextable::add_header_row(top = TRUE,
+	#             values = c(" ", "Season Used in HAI panel"),
+	#             colwidths = c(5, 6)) |>
+	#flextable::merge_at(j = 1:4, part = "footer") |>
+	# flextable::align(j = 6:11, align = "center") |>
+	flextable::autofit()
+
+```
+
+```{r}
+#| label: tab-sequence-numbers
+short_names_used <-
+	readr::read_rds(here::here("data", "viruses_used.rds")) |>
+	dplyr::pull(strain_short)
+
+readr::read_rds(here::here("results", "virus_accession.rds")) |>
+	dplyr::filter(short_name %in% short_names_used) |>
+	dplyr::select(-c(`2014`:`2019`), -analysis_name) |>
+	flextable::flextable() |>
+	flextable::set_header_labels(
+		values = list(
+			full_strain_name = "Strain Name",
+			#analysis_name = "Short Name",
+			short_name = "Abbreviation",
+			full_length = "Full Length?",
+			ha_source = "HA Sequence Source"
+		)
+	) |>
+	# flextable::add_footer(
+	# 	top = FALSE, 
+	# 	season = paste0(
+	# 		"If the full length sequence was not available the numbering of the",
+	# 		"residues that are available are listed."
+	# 	)
+	# ) |>
+	#flextable::add_header_row(top = TRUE,
+	#             values = c(" ", "Season Used in HAI panel"),
+	#             colwidths = c(5, 6)) |>
+	#flextable::merge_at(j = 1:4, part = "footer") |>
+	# flextable::align(j = 6:11, align = "center") |>
+	flextable::autofit()
+```
+
+# References
+
+<!-- END OF FILE -->
