@@ -1,0 +1,4 @@
+* Difference between viral cRNA and genomic RNA? Is one preferred or do I need to make changes?
+Do I need to get the complement of the cRNA?
+* Been getting sequences from UniProt, then getting the nucleotide sequences from associated
+Genbank links. Should I instead be using the translations from genbank for protein sees?
