@@ -1,0 +1,40 @@
+subtype,full_strain_name,analysis_name,short_name,factor_order
+h1,A/H1N1/south carolina_1_1918,H1N1-South Carolina-1918,SC/18,1
+h1,A/H1N1/weiss_43,H1N1-Weiss-1943,Wei/43,2
+h1,A/H1N1/fort monmouth_1_1947,H1N1-Fort Monmouth-1947,FM/47,3
+h1,A/H1N1/denver_1957,H1N1-Denver-1957,Den/57,4
+h1,A/H1N1/new jersey_8_1976,H1N1-New Jersey-1976,NJ/76,5
+h1,A/H1N1/ussr_90_1977,H1N1-Ussr-1977,USSR/77,6
+h1,A/H1N1/brazil_11_1978,H1N1-Brazil-1978,Bra/78,7
+h1,A/H1N1/california_10_1978,H1N1-California-1978,CA/78,8
+h1,A/H1N1/chile_1_1983,H1N1-Chile-1983,Chi/83,9
+h1,A/H1N1/singapore_6_1986,H1N1-Singapore-1986,Sing/86,10
+h1,A/H1N1/texas_36_1991,H1N1-Texas-1991,TX/91,11
+h1,A/H1N1/beijing/262/1995,H1N1-Beijing-1995,Bei/95,12
+h1,A/H1N1/new caledonia_20_1999,H1N1-New Caledonia-1999,NC/99,13
+h1,A/H1N1/solomon islands_3_2006,H1N1-Solomon Islands-2006,SI/06,14
+h1,A/H1N1/brisbane_59_2007,H1N1-Brisbane-2007,Bris/07,15
+h1,A/H1N1/california_07_2009,H1N1-California-2009,CA/09,16
+h1,A/H1N1/michigan 45/2015,H1N1-Michigan-2015,MI/15,17
+h1,A/H1N1/brisbane_02_2018,H1N1-Brisbane-2018,Bris/18,18
+h3,A/H3N2/hong kong_8_1968,H3N2-Hong Kong-1968,HK/68,22
+h3,A/H3N2/port chalmers_1_1973,H3N2-Port Chalmers-1973,PC/73,23
+h3,A/H3N2/texas_1_1977,H3N2-Texas-1977,TX/77,24
+h3,A/H3N2/mississippi_1_1985,H3N2-Mississippi-1985,MI/85,25
+h3,A/H3N2/sichuan_2_1987,H3N2-Sichuan-1987,Sich/87,26
+h3,A/H3N2/shangdong_9_1993,H3N2-Shangdong-1993,Shan/93,27
+h3,A/H3N2/nanchang_933_1995,H3N2-Nanchang-1995,Nan/95,28
+h3,A/H3N2/sydney_5_1997,H3N2-Sydney-1997,Syd/97,29
+h3,A/H3N2/panama_2007_1999,H3N2-Panama-1999,Pan/99,30
+h3,A/H3N2/fujian_411_2002,H3N2-Fujian-2002,Fuj/02,31
+h3,A/H3N2/new york_55_2004,H3N2-New York-2004,NY/04,32
+h3,A/H3N2/wisconsin_67_2005,H3N2-Wisconsin-2005,WI/05,33
+h3,A/H3N2/uruguay_716_2007,H3N2-Uruguay-2007,Uru/07,34
+h3,A/H3N2/perth_16_2009,H3N2-Perth-2009,Per/09,35
+h3,A/H3N2/victoria_361_2011,H3N2-Victoria-2011,Vic/11,36
+h3,A/H3N2/texas_50_2012,H3N2-Texas-2012,TX/12,37
+h3,A/H3N2/switzerland_9715293_2013,H3N2-Switzerland-2013,Switz/13,38
+h3,A/H3N2/hong kong_4801_2014,H3N2-Hong Kong-2014,HK/14,39
+h3,A/H3N2/singapore_infimh-16-0019_2016,H3N2-Singapore-2016,Sing/16,41
+h3,A/H3N2/kansas_14_2017,H3N2-Kansas-2017,KS/17,43
+h3,A/H3N2/south australia_34_2019,H3N2-South Australia-2019,SA/19,46
