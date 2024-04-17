@@ -17,6 +17,13 @@ box::use(
 # Load data
 dat <- readr::read_rds(here::here("data", "clean-data.rds"))
 
+# separate H1 and H3
+dat_h1 <- dat |>
+	dplyr::filter(subtype == "h1")
+
+dat_h3 <- dat |>
+	dplyr::filter(subtype == "h3")
+
 # ---- Nucleotide Alignment ----
 nuc_seqs <- with(dat, rlang::set_names(nucleotide_sequence, short_name)) |>
 	# Replace T with U for MSA
