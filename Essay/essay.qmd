@@ -1,0 +1,37 @@
+---
+title: "Genetic epidemiology of multiple sclerosis"
+author: "Zane Billings"
+date: last-modified
+date-format: iso
+format:
+  docx:
+    citeproc: false
+    filters: 
+      - at: pre-render
+        path: "_extensions/andrewheiss/wordcount/citeproc.lua"
+      - at: pre-render
+        path: "_extensions/andrewheiss/wordcount/wordcount.lua"
+bibliography: essay-refs.bib
+csl: plos-computational-biology.csl
+---
+
+Multiple sclerosis (MS) is a chronic autoimmune disease characterized by
+demyelination of nerves in the central nervous system. MS has no known singular
+cause, but onset is affected by genetic traits, environmental factors, immune
+dysregulation, and viral infections, particularly by Epstein-Barr Virus (EBV).
+None of these causes always leads to development of MS, and they interact in
+complex and sporadic ways.
+
+# MS is not hereditary, but some genetic risk factors are.
+
+# Genetic immunological differences are associated with MS pathophysiology.
+
+# Third fact
+
+# Fourth fact
+
+# Future directions
+
+# References
+
+<!-- END OF FILE -->
