@@ -25,7 +25,7 @@ dat_h3 <- dat |>
 	dplyr::filter(subtype == "h3")
 
 # ---- Nucleotide Alignment ----
-nuc_seqs <- with(dat, rlang::set_names(nucleotide_sequence, short_name)) |>
+nuc_seqs <- with(dat_h1, rlang::set_names(nucleotide_sequence, short_name)) |>
 	# Replace T with U for MSA
 	gsub(pattern = "t", replacement = "u")
 
@@ -38,11 +38,11 @@ nuc_msa <-
 		verbose = TRUE
 	)
 
-ss_nuc <- test_msa@unmasked
+ss_nuc <- nuc_msa@unmasked
 nuc_seqs_aligned <- ss_nuc |> as.character()
 
 # ---- Protein Alignment ----
-pro_seqs <- with(dat, rlang::set_names(protein_sequence, short_name))
+pro_seqs <- with(dat_h1, rlang::set_names(protein_sequence, short_name))
 
 pro_msa <-
 	pro_seqs |>
@@ -59,14 +59,14 @@ pro_seqs_aligned <- ss_pro |> as.character()
 # ---- Bind aligned seqs to df ----
 dat_seqs <-
 	tibble::tibble(
-		short_name = dat_clean$short_name,
+		short_name = dat_h1$short_name,
 		nuc_aligned = nuc_seqs_aligned,
 		pro_aligned = pro_seqs_aligned
 	)
 
 readr::write_rds(
 	dat_seqs,
-	file = here::here("data", "seqs-aligned.Rds")
+	file = here::here("data", "h1-seqs-aligned.Rds")
 )
 
 # ---- Nucleotide distance matrices ----
@@ -92,23 +92,13 @@ normalize_matrix <- function(mat) {
 	return(out)
 }
 
+norm_hamming_test <-
+	normalize_matrix(nuc_dists[[1]]) |>
+	`rownames<-`(dat_h1$short_name) |>
+	`colnames<-`(dat_h1$short_name)
 
-norm_hamming_test <- normalize_matrix(nuc_dists[[1]])
-
-norm_hamming_test  |>
-	`rownames<-`(dat_clean$short_name) |>
-	`colnames<-`(dat_clean$short_name) |>
-	tibble::as_tibble(rownames = "Var1") |>
-	tidyr::pivot_longer(
-		cols = -Var1,
-		names_to = "Var2",
-		values_to = "d"
-	)
-
-tidy_dist_mat <- function(d, names) {
+tidy_dist_mat <- function(d) {
 	out <- d |>
-		`rownames<-`(dat_clean$short_name) |>
-		`colnames<-`(dat_clean$short_name) |>
 		tibble::as_tibble(rownames = "Var1") |>
 		tidyr::pivot_longer(
 			cols = -Var1,
@@ -138,20 +128,32 @@ norm_hamming_test |>
 		legend.title.position = "top"
 	)
 
-plt_list <- purrr::map(
+plt_list <- purrr::map2(
 	nuc_dists,
-	\(x) x |>
+	m_vec,
+	\(x, m) x |>
+		normalize_matrix() |>
+		`rownames<-`(dat_h1$short_name) |>
+		`colnames<-`(dat_h1$short_name) |>
 		tidy_dist_mat() |>
 		ggplot() +
 		aes(x = Var1, y = Var2, fill = d) +
 		geom_tile() +
-		scale_fill_viridis_c() +
+		scale_fill_viridis_c(
+			limits = c(0, 1)
+		) +
 		theme(
 			axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
 			legend.key.size = unit(0.06, "npc"),
 			legend.title.position = "top"
+		) +
+		labs(
+			x = NULL,
+			y = NULL,
+			title = m
 		)
 )
 
 library(patchwork)
-purrr::reduce(plt_list, `+`)
+purrr::reduce(plt_list, `+`) +
+	patchwork::plot_layout(guides = "collect")

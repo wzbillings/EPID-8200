@@ -1,1 +1,4 @@
-aux/*
+# Packages loaded in an Auxiliary script shouldn't be counted as dependencies
+Auxiliary/*
+
+# END OF FILE
