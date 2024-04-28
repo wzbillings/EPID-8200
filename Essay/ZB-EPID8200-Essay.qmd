@@ -1,5 +1,6 @@
 ---
 title: "Genetic epidemiology of multiple sclerosis"
+subtitle: "EPID 8200 essay assignment"
 author: "Zane Billings"
 date: last-modified
 date-format: iso
@@ -24,7 +25,7 @@ Multiple sclerosis (MS) is a chronic autoimmune disease characterized by
 demyelination of nerves in the central nervous system. MS has no known singular
 cause, but onset is affected by genetic traits, environmental factors, immune
 dysregulation, and viral infections, particularly by Epstein-Barr Virus (EBV).
-None of these causes always leads to development of MS, and they interact in
+None of these causes always leads to the development of MS, and they interact in
 complex ways.
 
 # MS is not always hereditary, but some genetic risk factors are.
@@ -33,9 +34,7 @@ While MS is not hereditary in a classical Mendelian sense like some other
 neurological disorders (e.g. Huntington's), having a relative with MS is a
 risk factor, although families with many occurrences of MS are
 uncommon. Identical twins show the highest prevalence of familial
-MS, with prevalence decreasing along with genetic relatedness [@goris2022; @sadatseyedsadr2018]. MS affects over 200 different genetic loci, so
-quantifying the heritability of all traits which can increase MS susceptibility
-is impossible with current methodology. The effect of any given single
+MS, with prevalence decreasing along with genetic relatedness [@goris2022; @sadatseyedsadr2018]. MS affects over 200 different genetic loci, so quantifying the heritability of all traits that can increase MS susceptibility is impossible with the current methodology. The effect of any given single
 polymorphism on MS susceptibility is unclear, so understanding how all of these
 traits interact to determine MS heritability is difficult [@baranzini2017].
 
@@ -46,7 +45,7 @@ genetic haplotypes across racial and ethnic groups. Recent findings with the
 prevalence of MS in Australia, and the lack of data from Africa and the Middle
 East complicates this finding, however [@filippi2018]. Furthermore,
 Black Americans also have a higher risk of MS than indigenous American
-populations, or African and Asian populations. So attributing MS heritability
+populations or African and Asian populations. So attributing MS heritability
 to either an environmental effect of latitude or to allelic variants associated
 with specific ethnic groups is quite difficult, and MS susceptibility likely
 arises as the interaction of both effects [@baranzini2017; @wallin2012; @langer-gould2013].
@@ -54,25 +53,24 @@ arises as the interaction of both effects [@baranzini2017; @wallin2012; @langer-
 # Polymorphisms in important immune system genes are associated with MS pathophysiology.
 
 The first genetic risk factors discovered for MS were multiple alleles in human leukocyte antigen (HLA) genes, which
-encode the major histocompatibility complex (MHC) [@cotsapas2018]. MHC plays a vital role in the immune response, and is important in both identifying infectious agents, as well as auto-immune responses. Since MS involves the immune system attacking the myelin sheath of CNS nerves, involvement of a
-critical immunogenetic locus in MS pathophysiology makes sense. Several
-HLA allelles area ssociated with increased susceptibility to MS, although
+encode the major histocompatibility complex (MHC) [@cotsapas2018]. MHC plays a vital role in the immune response and is important in both identifying infectious agents as well as auto-immune responses. Since MS involves the immune system attacking the myelin sheath of CNS nerves, involvement of a
+critical immunogenetic locus in MS pathophysiology makes sense. Several HLA alleles are associated with increased susceptibility to MS, although
 not all individuals with MS have these HLA alleles, nor does the presence
 of a given HLA allele imply the incidence of MS.
 
 Since the 1970s when the HLA complex was discovered to be involved with MS, MS
 has been accepted as a polygenetic trait where many individual polymorphisms all
 contribute a small amount of risk towards developing MS [@goris2022]. There are
-two hypothesis with regards to the genetic component of MS. The "common disease"
+two hypotheses with regard to the genetic component of MS. The "common disease"
 hypothesis suggests that only a few frequent gene variants affect disease
-susceptibility, and these variants have high prevalence but a weak effect
+susceptibility, and these variants have a high prevalence but a weak effect
 [@ortiz2023; @pritchard2002]. The heterogeneity hypothesis posits a genetic
 predisposition to a disease is due to many rare variants which sporadically
 occur in the population, but individually have very strong effects [@ortiz2023;
 @smith2002]. However, genome-wide association studies (GWAS) have suggested that
 a mixture of these two hypotheses is an underlying mechanism for the development
 of MS, and the interaction between prevalent, weak genes and rare, strong genes
-is important. MS has over 200 loci which have been identified as risk factors
+is important. MS has over 200 loci that have been identified as risk factors
 [@baranzini2017], which is more than expected under the common disease
 hypothesis, but less than expected purely from the heterogeneity hypothesis
 [@yang1997; @ortiz2023].
@@ -80,7 +78,7 @@ hypothesis, but less than expected purely from the heterogeneity hypothesis
 Multiple different HLA alleles are associated with MS, empirically supporting
 a blend of strong and weak genetic effects on MS susceptibility. While one
 major HLA allele is associated with the majority of MS cases in Caucasian
-populations (specificaly HLA-DRB1*15:01), this allele is not necessary or
+populations (specifically HLA-DRB1*15:01), this allele is not necessary or
 sufficient for the development of MS. Other HLA genotypes have also been
 associated with MS, and different genotypes are associated with other
 ethnic groups as well. So while some HLA alleles have a stronger impact on
@@ -101,11 +99,11 @@ human serosurveys, even in individuals who have never had symptomatic
 infections. For example, EBV is ubiquitous, even in individuals who report never
 having infectious mononucleosis.
 
-The ubiquity of herpesviruses has made testing causal hypothesis of the
-relationship between herpesviruse serostatus and other diseases difficult,
+The ubiquity of herpesviruses has made testing causal hypotheses of the
+relationship between herpesvirus serostatus and other diseases difficult
 because such studies typically have very low power. However, a recent cohort
-study conducted by Greer et al using residual serum samples from the Department
-of Defense Serum Repository demonstrated that risk of MS incidecence was 32
+study using residual serum samples from the Department
+of Defense Serum Repository demonstrated that risk of MS incidence was 32
 times higher in participants who were EBV-negative prior to enrollment
 [-@bjornevik2022]. The same study found that other viruses, including
 cytomegalovirus, did not show the same effect. Given that not every EBV-negative
@@ -116,7 +114,38 @@ infection.
 
 # Environmental and genetic traits have interacting effects on MS susceptibility.
 
+Genetic predisposition, EBV infection, and environmental effects are all
+potential risk factors for the development of MS. However, the relationship
+between these factors is likely not simple, and all of these factors likely
+interact with each other to create a complex network of MS risk factors.
+Obesity, which is itself correlated with environmental and genetic factors
+[@goodarzi2018] interacts with genetic factors linked to MS [@olsson2017]. Thus,
+there are genes that indicate susceptibility to both obesity and MS, and
+obesity is also a risk factor for MS [@yuan2021a].
+
+Besides obesity, other environmental and lifestyle traits are associated with
+increased risk of developing MS. These include, among others, environmental
+toxin exposures, disordered sleep patterns, and smoking. Many of these risk
+factors appear to be more severe if they occur during adolescence. All of these
+environmental traits are known to interact with genetic and other individual
+factors, and appear to increase risk for some individuals more than others.
+Particularly, the HLA genotypes discussed previously are known to interact with
+these risk factors [@olsson2017]. For example, individuals who smoke and have
+certain HLA mutations appear to have excess risk for the development of MS above
+what would be expected from independent risk factors [@hedstrom2014].
+
 # Future directions
+
+As our broad understanding of genetic epidemiology methods and therapies
+continues to expand, our knowledge base for MS should expand accordingly. Novel
+survey methods like immunochip genotyping can provide direct estimates of
+the heritability of MS-associated genes [@nova2022], and as our ability to
+conduct complex epigenetics studies increases, we will deepen our understanding
+of not just genetic, but epigenetic markers of MS susceptibility [@olsson2017].
+Finding new risk factors can help direct therapeutic trials, and understanding
+the autoimmune mechanisms that lead to the development of MS from these
+risk factors are the primary goals in driving MS diagnostic and therapeutic
+approaches [@cotsapas2018; @yuan2021a; @bjornevik2022]
 
 # References
 
