@@ -1,0 +1,63 @@
+---
+title: |
+  Comparing antigenic distance metrics for influenza
+subtitle: "EPID 8200 project"
+author: "W. Zane Billings"
+date: last-modified
+date-format: iso
+# format:
+#   docx:
+#     citeproc: false
+#     filters: 
+#       - at: pre-render
+#         path: "_extensions/andrewheiss/wordcount/citeproc.lua"
+#       - at: pre-render
+#         path: "_extensions/andrewheiss/wordcount/wordcount.lua"
+bibliography: proj-refs.bib
+csl: plos-computational-biology.csl
+abstract: |
+  Put the 50 words abstract here
+---
+
+Instructions:
+
+40% Final Project. Infectious Disease Genomic Epidemiology. This product will be worked on
+throughout the course. Students will execute a project that they design based on the mid-term
+assignment. The Analysis will be an application of the tools introduced during the computer
+labs. The final assignment should follow the format of the journal Emerging Infectious Diseases
+Dispatch type article. Dispatches are updates on infectious disease trends and research that
+include descriptions of new methods for detecting, characterizing, or subtyping new or
+reemerging pathogens. These articles are a maximum of 1200 words, have 15 references and
+have a 50 word abstract, maximum of 4 figures/tables total, e.g. 2 figures and 2 tables; 1 figure
+and 3 tables; 4 figures and no tables. Include subheadings in body of text.
+
+https://wwwnc.cdc.gov/eid/article/28/7/22-0010_article 
+
+Put a brief intro here
+
+# The Study
+
+Distances to compare for this MS:
+1. AA hamming distance
+2. year difference
+3. p-epitope
+4. cartography
+
+Figure 1: correlation plot between distance metrics, show pearson and spearman
+correlations
+
+Figure: delta score histograms for each distance?
+
+Figure 2: main trees
+Panel A: ML tree, panel B: 4 subpanels with the distance trees, if it fits.
+Otherwise we have space for one more figure.
+
+Table 1: table of tree similarity and LRT values
+
+# Conclusions
+
+# Acknowledgement
+
+# References
+
+<!-- END OF FILE -->

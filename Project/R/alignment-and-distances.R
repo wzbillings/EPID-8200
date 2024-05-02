@@ -24,7 +24,7 @@ dat_h1 <- dat |>
 dat_h3 <- dat |>
 	dplyr::filter(subtype == "h3")
 
-# ---- Nucleotide Alignment ----
+# ---- Nucleotide Alignment (H1) ----
 nuc_seqs <- with(dat_h1, rlang::set_names(nucleotide_sequence, short_name)) |>
 	# Replace T with U for MSA
 	gsub(pattern = "t", replacement = "u")
@@ -38,10 +38,19 @@ nuc_msa <-
 		verbose = TRUE
 	)
 
-ss_nuc <- nuc_msa@unmasked
-nuc_seqs_aligned <- ss_nuc |> as.character()
+alignment_to_character <- function(msa_alignment) {
+	return(as.character(msa_alignment@unmasked))
+}
 
-# ---- Protein Alignment ----
+nuc_seqs_aligned <- alignment_to_character(nuc_msa)
+
+# Save the alignment to file
+readr::write_rds(
+	nuc_msa,
+	here::here("results", "h1-rna-alignment.Rds")
+)
+
+# ---- Protein Alignment (H1) ----
 pro_seqs <- with(dat_h1, rlang::set_names(protein_sequence, short_name))
 
 pro_msa <-
@@ -53,11 +62,16 @@ pro_msa <-
 		verbose = TRUE
 	)
 
-ss_pro <- pro_msa@unmasked
-pro_seqs_aligned <- ss_pro |> as.character()
+pro_seqs_aligned <- alignment_to_character(pro_msa)
 
-# ---- Bind aligned seqs to df ----
-dat_seqs <-
+# Save the alignment to file
+readr::write_rds(
+	nuc_msa,
+	here::here("results", "h1-pro-alignment.Rds")
+)
+
+# ---- Bind aligned seqs to df (H1) ----
+dat_seqs_h1 <-
 	tibble::tibble(
 		short_name = dat_h1$short_name,
 		nuc_aligned = nuc_seqs_aligned,
@@ -65,16 +79,75 @@ dat_seqs <-
 	)
 
 readr::write_rds(
-	dat_seqs,
+	dat_seqs_h1,
 	file = here::here("data", "h1-seqs-aligned.Rds")
 )
 
-# ---- Nucleotide distance matrices ----
-nuc_dists <- list()
+# ---- Nucleotide Alignment (H3) ----
+nuc_seqs <- with(dat_h3, rlang::set_names(nucleotide_sequence, short_name)) |>
+	# Replace T with U for MSA
+	gsub(pattern = "t", replacement = "u")
+
+nuc_msa <-
+	nuc_seqs |>
+	msa::msa(
+		method = "Muscle",
+		type = "rna",
+		order = "input",
+		verbose = TRUE
+	)
+
+alignment_to_character <- function(msa_alignment) {
+	return(as.character(msa_alignment@unmasked))
+}
+
+nuc_seqs_aligned <- alignment_to_character(nuc_msa)
+
+# Save the alignment to file
+readr::write_rds(
+	nuc_msa,
+	here::here("results", "h3-rna-alignment.Rds")
+)
+
+# ---- Protein Alignment (H3) ----
+pro_seqs <- with(dat_h3, rlang::set_names(protein_sequence, short_name))
+
+pro_msa <-
+	pro_seqs |>
+	msa::msa(
+		method = "Muscle",
+		type = "protein",
+		order = "input",
+		verbose = TRUE
+	)
+
+pro_seqs_aligned <- alignment_to_character(pro_msa)
+
+# Save the alignment to file
+readr::write_rds(
+	nuc_msa,
+	here::here("results", "h3-pro-alignment.Rds")
+)
+
+# ---- Bind aligned seqs to df (H3) ----
+dat_seqs_h3 <-
+	tibble::tibble(
+		short_name = dat_h3$short_name,
+		nuc_aligned = nuc_seqs_aligned,
+		pro_aligned = pro_seqs_aligned
+	)
+
+readr::write_rds(
+	dat_seqs_h3,
+	file = here::here("data", "h3-seqs-aligned.Rds")
+)
+
+# ---- Protein distance matrices ----
+pro_dists <- list()
 
 m_vec <- c("hamming", "lv", "osa", "dl")
 
-nuc_dists <-
+pro_dists <-
 	purrr::map(
 		m_vec,
 		\(m) stringdist::stringdistmatrix(
@@ -114,46 +187,46 @@ tidy_dist_mat <- function(d) {
 	return(out)
 }
 
-library(ggplot2)
-ggplot2::theme_set(hgp::theme_ms())
-norm_hamming_test |>
-	tidy_dist_mat() |>
-	ggplot() +
-	aes(x = Var1, y = Var2, fill = d) +
-	geom_tile() +
-	scale_fill_viridis_c() +
-	theme(
-		axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-		legend.key.size = unit(0.06, "npc"),
-		legend.title.position = "top"
-	)
-
-plt_list <- purrr::map2(
-	nuc_dists,
-	m_vec,
-	\(x, m) x |>
-		normalize_matrix() |>
-		`rownames<-`(dat_h1$short_name) |>
-		`colnames<-`(dat_h1$short_name) |>
-		tidy_dist_mat() |>
-		ggplot() +
-		aes(x = Var1, y = Var2, fill = d) +
-		geom_tile() +
-		scale_fill_viridis_c(
-			limits = c(0, 1)
-		) +
-		theme(
-			axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-			legend.key.size = unit(0.06, "npc"),
-			legend.title.position = "top"
-		) +
-		labs(
-			x = NULL,
-			y = NULL,
-			title = m
-		)
-)
-
-library(patchwork)
-purrr::reduce(plt_list, `+`) +
-	patchwork::plot_layout(guides = "collect")
+# library(ggplot2)
+# ggplot2::theme_set(hgp::theme_ms())
+# norm_hamming_test |>
+# 	tidy_dist_mat() |>
+# 	ggplot() +
+# 	aes(x = Var1, y = Var2, fill = d) +
+# 	geom_tile() +
+# 	scale_fill_viridis_c() +
+# 	theme(
+# 		axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+# 		legend.key.size = unit(0.06, "npc"),
+# 		legend.title.position = "top"
+# 	)
+# 
+# plt_list <- purrr::map2(
+# 	nuc_dists,
+# 	m_vec,
+# 	\(x, m) x |>
+# 		normalize_matrix() |>
+# 		`rownames<-`(dat_h1$short_name) |>
+# 		`colnames<-`(dat_h1$short_name) |>
+# 		tidy_dist_mat() |>
+# 		ggplot() +
+# 		aes(x = Var1, y = Var2, fill = d) +
+# 		geom_tile() +
+# 		scale_fill_viridis_c(
+# 			limits = c(0, 1)
+# 		) +
+# 		theme(
+# 			axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+# 			legend.key.size = unit(0.06, "npc"),
+# 			legend.title.position = "top"
+# 		) +
+# 		labs(
+# 			x = NULL,
+# 			y = NULL,
+# 			title = m
+# 		)
+# )
+# 
+# library(patchwork)
+# purrr::reduce(plt_list, `+`) +
+# 	patchwork::plot_layout(guides = "collect")
