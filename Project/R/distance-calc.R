@@ -54,6 +54,21 @@ dist_hamming_h3 <-
 	as.matrix()
 
 # Calculate p-Epitope distance matrix ====
+source(here::here("R", "p-epitope-calculator.R"))
+
+dist_pepi_h1 <-
+	prot_h1 |>
+	dist.pepi(subtype = 'h1')
+
+dist_pepi_h3 <-
+	prot_h1 |>
+	dist.pepi(subtype = 'h3')
+
+test1 <- tidy_dist_mat(dist_hamming_h1) |>
+	dplyr::rename(hamming = d)
+test2 <- tidy_dist_mat(dist_pepi_h1) |>
+	dplyr::rename(pepi = d)
+testj <- dplyr::full_join(test1, test2, by = c('Var1', 'Var2'))
 
 # Calculate cartography distance matrix ====
 
@@ -66,4 +81,77 @@ rownames(dist_cart_h1) <- replace_strain_names(rownames(dist_cart_h1))
 # Dor it for H3
 dist_cart_h3 <- racmaps_map_to_distances(racmacs_map_h3)
 
-# Calculate year distance matrix
+# Calculate year distance matrix ====
+dist_year_h1 <-
+	prot_h1 |>
+	names() |>
+	dist.year()
+
+dist_year_h3 <-
+	prot_h3 |>
+	names() |>
+	dist.year()
+
+# Output formatting ====
+# Make a list of the distance matrices
+dists_h1 <- list(
+	"year" = dist_year_h1,
+	"hamming" = dist_hamming_h1,
+	"pepi" = dist_pepi_h1,
+	"cart" = dist_cart_h1
+)
+
+dists_h3 <- list(
+	"year" = dist_year_h3,
+	"hamming" = dist_hamming_h3,
+	"pepi" = dist_pepi_h3,
+	"cart" = dist_cart_h3
+)
+
+# Tidy and combine into a nice data frame
+dat_dists_h1 <-
+	dists_h1 |>
+	purrr::map(tidy_dist_mat) |>
+	dplyr::bind_rows(.id = "method")
+
+dat_dists_h3 <-
+	dists_h3 |>
+	purrr::map(tidy_dist_mat) |>
+	dplyr::bind_rows(.id = "method")
+
+dat_dists <-
+	list(
+		'h1' = dat_dists_h1,
+		'h3' = dat_dists_h3
+	) |>
+	dplyr::bind_rows(.id = "subtype")
+
+dat_dists_normalized <-
+	dat_dists |>
+	dplyr::group_by(subtype, method) |>
+	dplyr::mutate(d = (d - min(d)) / (max(d) - min(d))) |>
+	dplyr::ungroup()
+
+# Save to file ====
+
+readr::write_rds(
+	dists_h1,
+	here::here("results", "h1-dists.Rds")
+)
+
+readr::write_rds(
+	dists_h3,
+	here::here("results", "h3-dists.Rds")
+)
+
+readr::write_rds(
+	dat_dists,
+	here::here("results", "dist-df-unnormalized.Rds")
+)
+
+readr::write_rds(
+	dat_dists_normalized,
+	here::here("results", "dist-df-normalized.Rds")
+)
+
+#### END OF FILE ####

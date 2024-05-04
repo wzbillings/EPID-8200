@@ -40,7 +40,7 @@ tidy_dist_mat <- function(d) {
 
 # Take a racmacs object, extract the coordinates, and return a distance matrix.
 racmaps_map_to_distances <- function(map) {
-	coords <- agCoords(racmacs_map_h1)
+	coords <- Racmacs::agCoords(racmacs_map_h1)
 	strains <- rownames(coords)
 	x <- coords[, 1]
 	y <- coords[, 2]
@@ -51,8 +51,9 @@ racmaps_map_to_distances <- function(map) {
 		dimnames = list(strains, strains)
 	)
 	
-	for (i in 1:nrow(res)) {
-		for (j in 1:ncol(res)) {
+	# Calculate the lower triangle of the distance matrix
+	for (i in 2:nrow(res)) {
+		for (j in 1:(i-1)) {
 			x_part <- (x[[j]] - x[[i]])^2
 			y_part <- (y[[j]] - y[[i]])^2
 			dist <- sqrt(x_part + y_part)
@@ -60,7 +61,14 @@ racmaps_map_to_distances <- function(map) {
 		}
 	}
 	
-	return(res)
+	# We know all the diagonal entries are 0 (distance of a point to itself) so
+	# set those without doing the calculation.
+	diag(res) <- 0
+	
+	# Exploit R's dist class to automatically fill in the upper triangle
+	out <- res |> as.dist() |> as.matrix()
+	
+	return(out)
 }
 
 # Function for replacing strain names ----
@@ -119,3 +127,35 @@ replace_strain_names <- function(x, from = "analysis", to = "short",
 	
 	return(vals)
 }
+
+# Function for extracting years from strain names ====
+extract_year <- function(analysis_names) {
+	year <-
+		stringr::str_extract(
+			analysis_names,
+			"[0-9]{4}$"
+		) |>
+		as.integer()
+	return(year)
+}
+
+# Convenience function for calculating matrix of year distances ====
+dist.year <- function(names, format = "short") {
+	years <-
+		names |>
+		replace_strain_names(from = format, to = "analysis") |>
+		extract_year()
+	res <- dist(years, method = "manhattan")
+	
+	# Remove the special dist class
+	out <- as.matrix(res)
+	
+	# Set nice names
+	short_names <- replace_strain_names(names, from = format, to = "short")
+	colnames(out) <- short_names
+	rownames(out) <- short_names
+	
+	return(out)
+}
+
+#### END OF FILE ####
