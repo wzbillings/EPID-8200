@@ -6,90 +6,64 @@
 # matrices to use for phylogenetics.
 ###
 
-pro_dists <- list()
+box::use(
+	readr,
+	here,
+	phangorn,
+	Racmacs
+)
 
-m_vec <- c("hamming", "lv", "osa", "dl")
+source(here::here("R", "utils.R"))
 
-pro_dists <-
-	purrr::map(
-		m_vec,
-		\(m) stringdist::stringdistmatrix(
-			a = dat_seqs$nuc_aligned,
-			b = dat_seqs$nuc_aligned,
-			method = m
-		),
-		.progress = "Calculating amino acid string distances."
-	)
+# Data loading ====
+# First we need to load in the aligned sequence data. For now we'll
+# only look at the protein sequences.
+# TODO calculate more distances
+# TODO do distances for nuclear sequences
+align_h1 <- readr::read_rds(here::here("results", "h1-pro-alignment.Rds"))
+align_h3 <- readr::read_rds(here::here("results", "h3-pro-alignment.Rds"))
 
-normalize_matrix <- function(mat) {
-	mmax <- max(mat)
-	mmin <- min(mat)
-	out <- (mat - mmin) / (mmax - mmin)
-	return(out)
-}
+# Convert the alignments to phyDat type for phangorn
+phydat_h1 <- phangorn::as.phyDat(align_h1)
+phydat_h3 <- phangorn::as.phyDat(align_h3)
 
-norm_hamming_test <-
-	normalize_matrix(nuc_dists[[1]]) |>
-	`rownames<-`(dat_h1$short_name) |>
-	`colnames<-`(dat_h1$short_name)
+# Load the sequence dataframes
+seqs_h1 <- readr::read_rds(here::here("data", "h1-seqs-aligned.Rds"))
+seqs_h3 <- readr::read_rds(here::here("data", "h3-seqs-aligned.Rds"))
 
-tidy_dist_mat <- function(d) {
-	out <- d |>
-		tibble::as_tibble(rownames = "Var1") |>
-		tidyr::pivot_longer(
-			cols = -Var1,
-			names_to = "Var2",
-			values_to = "d"
-		) |>
-		# Order variable factors
-		dplyr::mutate(
-			Var1 = forcats::fct_inorder(Var1),
-			Var2 = forcats::fct_inorder(Var2) |> forcats::fct_rev()
-		)
-	
-	return(out)
-}
+# Extract the protein sequences
+prot_h1 <- seqs_h1$pro_aligned
+names(prot_h1) <- seqs_h1$short_name
 
-# library(ggplot2)
-# ggplot2::theme_set(hgp::theme_ms())
-# norm_hamming_test |>
-# 	tidy_dist_mat() |>
-# 	ggplot() +
-# 	aes(x = Var1, y = Var2, fill = d) +
-# 	geom_tile() +
-# 	scale_fill_viridis_c() +
-# 	theme(
-# 		axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-# 		legend.key.size = unit(0.06, "npc"),
-# 		legend.title.position = "top"
-# 	)
-# 
-# plt_list <- purrr::map2(
-# 	nuc_dists,
-# 	m_vec,
-# 	\(x, m) x |>
-# 		normalize_matrix() |>
-# 		`rownames<-`(dat_h1$short_name) |>
-# 		`colnames<-`(dat_h1$short_name) |>
-# 		tidy_dist_mat() |>
-# 		ggplot() +
-# 		aes(x = Var1, y = Var2, fill = d) +
-# 		geom_tile() +
-# 		scale_fill_viridis_c(
-# 			limits = c(0, 1)
-# 		) +
-# 		theme(
-# 			axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-# 			legend.key.size = unit(0.06, "npc"),
-# 			legend.title.position = "top"
-# 		) +
-# 		labs(
-# 			x = NULL,
-# 			y = NULL,
-# 			title = m
-# 		)
-# )
-# 
-# library(patchwork)
-# purrr::reduce(plt_list, `+`) +
-# 	patchwork::plot_layout(guides = "collect")
+prot_h3 <- seqs_h3$pro_aligned
+names(prot_h3) <- seqs_h3$short_name
+
+# Next we need to load the cartography data
+racmacs_map_h1 <- Racmacs::read.acmap(here::here("data", "h1_post_all_2d.ace"))
+racmacs_map_h3 <- Racmacs::read.acmap(here::here("data", "h3_post_all_2d.ace"))
+
+# Calculate Hamming distance matrix ====
+dist_hamming_h1 <-
+	phydat_h1 |>
+	phangorn::dist.hamming() |>
+	as.matrix()
+
+dist_hamming_h3 <-
+	phydat_h3 |>
+	phangorn::dist.hamming() |>
+	as.matrix()
+
+# Calculate p-Epitope distance matrix ====
+
+# Calculate cartography distance matrix ====
+
+# Do it for H1
+dist_cart_h1 <- racmaps_map_to_distances(racmacs_map_h1)
+# Fix the column and row names to use short names instead
+colnames(dist_cart_h1) <- replace_strain_names(colnames(dist_cart_h1))
+rownames(dist_cart_h1) <- replace_strain_names(rownames(dist_cart_h1))
+
+# Dor it for H3
+dist_cart_h3 <- racmaps_map_to_distances(racmacs_map_h3)
+
+# Calculate year distance matrix

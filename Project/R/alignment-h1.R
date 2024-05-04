@@ -16,6 +16,8 @@ box::use(
 	msa[...]
 )
 
+source(here::here("R", "utils.R"))
+
 # Load data
 dat <- readr::read_rds(here::here("data", "clean-data.rds"))
 
@@ -39,10 +41,6 @@ h1_nuc_msa <-
 		order = "input",
 		verbose = TRUE
 	)
-
-alignment_to_character <- function(msa_alignment) {
-	return(as.character(msa_alignment@unmasked))
-}
 
 h1_nuc_seqs_aligned <- alignment_to_character(h1_nuc_msa)
 

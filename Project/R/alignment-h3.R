@@ -16,6 +16,8 @@ box::use(
 	msa[...]
 )
 
+source(here::here("R", "utils.R"))
+
 # Load data
 dat <- readr::read_rds(here::here("data", "clean-data.rds"))
 
@@ -25,10 +27,6 @@ dat_h1 <- dat |>
 
 dat_h3 <- dat |>
 	dplyr::filter(subtype == "h3")
-
-alignment_to_character <- function(msa_alignment) {
-	return(as.character(msa_alignment@unmasked))
-}
 
 # ---- Nucleotide Alignment (H3) ----
 nuc_seqs <- with(dat_h3, rlang::set_names(nucleotide_sequence, short_name)) |>
