@@ -273,7 +273,99 @@ ggsave(
 	width = 13, height = 6.5
 )
 
-# Distance trees
+magick::image_read(here::here("Results", "Figures", "ml-trees.png")) |>
+	magick::image_crop(
+		geometry = "3861x1930",
+		gravity = "center"
+	) |>
+	magick::image_write(here::here("Results", "Figures", "ml-trees.png"))
 
+# Distance and Tests table ====
+h1_sh_test <- readr::read_rds(here::here("Results", "h1-sh-test.Rds"))
+h3_sh_test <- readr::read_rds(here::here("Results", "h3-sh-test.Rds"))
+
+h1_treedists <- readr::read_rds(here::here("Results", "h1_treedists.Rds"))
+h3_treedists <- readr::read_rds(here::here("Results", "h3_treedists.Rds"))
+
+h1_table <-
+	h1_sh_test |>
+	tibble::as_tibble() |>
+	dplyr::mutate(
+		Tree = c(
+			"Maximum Likelihood (baseline)", "Temporal Distance", "Hamming distance",
+			"p-Epitope distance", "Cartographic distance"
+		),
+		.before = dplyr::everything()
+	) |>
+	dplyr::mutate(
+		Tree = Tree,
+		`log likelihood` = `ln L`,
+		`Δll` = `Diff ln L`,
+		dplyr::across(
+			c(`log likelihood`, `Δll`),
+			\(x) sprintf("%.1f", x)
+		),
+		`SH p-value` = ifelse(
+			`p-value` < 0.001,
+			"< 0.001",
+			sprintf("%.3f", `p-value`)
+		),
+		`RF distance` = h1_treedists[[2]][, "ml"],
+		.keep = "none"
+	)
+
+h3_table <-
+	h3_sh_test |>
+	tibble::as_tibble() |>
+	dplyr::mutate(
+		Tree = c(
+			"Maximum Likelihood (baseline)", "Temporal Distance", "Hamming distance",
+			"p-Epitope distance", "Cartographic distance"
+		),
+		.before = dplyr::everything()
+	) |>
+	dplyr::mutate(
+		Tree = Tree,
+		`log likelihood` = `ln L`,
+		`Δll` = `Diff ln L`,
+		dplyr::across(
+			c(`log likelihood`, `Δll`),
+			\(x) sprintf("%.1f", x)
+		),
+		`SH p-value` = ifelse(
+			`p-value` < 0.001,
+			"< 0.001",
+			sprintf("%.3f", `p-value`)
+		),
+		`RF distance` = h3_treedists[[2]][, "ml"],
+		.keep = "none"
+	)
+
+h1_table[1, 4] <- "N/A"
+h3_table[1, 4] <- "N/A"
+
+joined_stat_table <-
+	dplyr::bind_rows(
+		"H1N1" = h1_table,
+		"H3N2" = h3_table,
+		.id = " "
+	) |>
+	flextable::flextable() |>
+	flextable::merge_v(j = 1) |>
+	flextable::valign(j = 1, valign = "top") |>
+	flextable::fix_border_issues() |>
+	flextable::autofit() |>
+	flextable::set_caption(paste0(
+		"Log likelihood of all constructed trees, along with the decrease in",
+		" log likelihood (Δll) from the ML model, the p-value of the ",
+		"Shimodaira-Hasegawa test (SH p-value; evaluated on one million bootstrap",
+		" resamples), and the Robinson-Foulds distance from the ML",
+		" tree (RF distance)."
+	))
+
+readr::write_rds(
+	joined_stat_table,
+	here::here("Results", "Tables", "stat-table.Rds")
+)
 
 #### END OF FILE ####
