@@ -5,48 +5,121 @@ subtitle: "EPID 8200 project"
 author: "W. Zane Billings"
 date: last-modified
 date-format: iso
-# format:
-#   docx:
-#     citeproc: false
-#     filters: 
-#       - at: pre-render
-#         path: "_extensions/andrewheiss/wordcount/citeproc.lua"
-#       - at: pre-render
-#         path: "_extensions/andrewheiss/wordcount/wordcount.lua"
-bibliography: proj-refs.bib
+format:
+  docx:
+    citeproc: false
+    filters:
+      - at: pre-render
+        path: "../../_extensions/andrewheiss/wordcount/citeproc.lua"
+      - at: pre-render
+        path: "../../_extensions/andrewheiss/wordcount/wordcount.lua"
+bibliography: project-refs.bib
 csl: plos-computational-biology.csl
 abstract: |
   Put the 50 words abstract here
+execute:
+  echo: false
+  freeze: auto
 ---
 
-Instructions:
+```{r}
+#| label: setup
+#| include: false
 
-40% Final Project. Infectious Disease Genomic Epidemiology. This product will be worked on
-throughout the course. Students will execute a project that they design based on the mid-term
-assignment. The Analysis will be an application of the tools introduced during the computer
-labs. The final assignment should follow the format of the journal Emerging Infectious Diseases
-Dispatch type article. Dispatches are updates on infectious disease trends and research that
-include descriptions of new methods for detecting, characterizing, or subtyping new or
-reemerging pathogens. These articles are a maximum of 1200 words, have 15 references and
-have a 50 word abstract, maximum of 4 figures/tables total, e.g. 2 figures and 2 tables; 1 figure
-and 3 tables; 4 figures and no tables. Include subheadings in body of text.
+box::use(
+	knitr,
+	here,
+	markdown,
+	rmarkdown,
+	mime
+)
+```
 
-https://wwwnc.cdc.gov/eid/article/28/7/22-0010_article 
 
-Put a brief intro here
+Influenza A virus causes seasonal epidemics worldwide, primarily driven by
+continual evolution of the virus under selective pressure by host immunity
+[@kim2018]. Development of a universal influenza vaccine which can protect
+against novel strains of influenza has many challenges, including surveillence
+of new genomic variants and predicting which will be successful
+[@erbelding2018]. Statistical modeling and phylodynamic approaches are crucial
+tools in the development of a more broadly-protective influenza vaccine, but
+these methods rely on understanding how different each genomic variant of
+influenza actually is from its predecessors [@krammer2018; @viboud2020].
 
-# The Study
+Many different metrics for assessing the antigenic difference between two
+influenza strains currently exist, including phylogenetic methods
+[@durviaux2014], methods based on sequence differences [@anderson2018;
+@gupta2006], and methods like antigenic cartrography which are based on observed
+immune responses [@fonville2016; @bedford2014c]. To understand the agreement in
+phylogenetic and sequence-based approaches for determining the distance between
+influenza strains, we obtained data from an ongoing prospective, open cohort
+study that has been previously described [@nunez2017; @abreau2020]. Using
+laboratory data from this study, we were able to compare antigenic cartography
+based on a panel of hemagglutination inhibition (HAI) titers to phylogenetic
+methods.
 
-Distances to compare for this MS:
-1. AA hamming distance
-2. year difference
-3. p-epitope
-4. cartography
+# Study Methodology
 
-Figure 1: correlation plot between distance metrics, show pearson and spearman
-correlations
+Briefly, our study data [@nunez2017; @abreau2020] consisted of volunteers
+enrolled at three different study sites from 2013 -- 2019 who received a
+FluZone (Sanofi Pasteur) vaccine, and gave pre-vaccination and post-vaccination
+(21 or 28 day) serum samples. The serum samples were used for HAI assays against
+a panel of historical viruses. We computed the Hamming distance [@anderson2018],
+$p$-Epitope distance [@gupta2006], and the absolute difference in the year of
+isolation of strains [@auladell2022] from the sequences of all influenza
+viruses used for HAI assays, and used Racmacs to compute antigenic cartography
+distances from the HAI data [@wilks2023]. All of our analyses were conducted
+separately for H1N1 and H3N2 strains.
 
-Figure: delta score histograms for each distance?
+In order to compare with phylogenetic methods, we first computed a multiple
+sequence alignment (MSA) using the MUSCLE algorithm [@edgar2004]. The Hamming
+and $p$-Epitope distances were computed based on this MSA. In total, we had 18
+H1N1 strains and 21 H3N2 strains which were aligned separately. We then used
+both alignments to construct maximum likelihood unrooted phylogenetic trees
+using the FLU amino acid substitution model [@dang2010]. We extracted the
+cophenetic distances between taxa from the ML trees, and compared these
+distances to each of our other four distance metrics (temporal, Hamming,
+$p$-Epitope, and cartography) using Pearson's correlation.
+
+For each of the four distance metrics, we also built distance-based trees using
+neighbor joining. To compare the methods, we calculated the likelihood of each
+of the distance-based trees under the same ML framework, then estimated the
+Shimodaira-Hasegawa test statistic (with one million bootstrap resamples) to
+compare each of the distance trees to the ML tree. Finally, we computed the
+Robinson-Foulds distance between each set of trees. Our analyses were implented
+with R version 4.3.3 (2024-02-29 ucrt) [@rcoreteam2024] using the packages
+`phangorn` [@schliep2011] and `msa` [@bodenhofer2015].
+
+# Study Results
+
+We found that all four distance metrics were strongly correlated with cophenetic
+tree distance for H3N2, but for H1N1, only the Hamming and $p$-Epitope distances
+had a strong correlation with the tree distance (@fig-corr). H1N1 has two
+clusters, 2009-pandemic like (pdm) and non-pdm. The pdm-like strains are
+genetically more similar to the 1918 pandemic strain than to most strains which
+circulated from 1950 -- 2009, so the temporal distance correlation is weak as
+expected.
+
+```{r}
+#| label: fig-corr
+#| fig-cap: |
+#|   Scatterplots showing the cophenetic tree distance on the x-axis and the
+#|   other distance metrics we calculated on the y-axes. The plots on the
+#|   left are for H1N1 strains and the plots on the right are for H3N2
+#|   strains. The box shows Pearson's correlation (R) along with a 95%
+#|   Wald-type confidence interval.
+
+knitr::include_graphics(here::here("Results", "Figures", "corr-plot.png"))
+```
+
+The cartographic distance correlated for H1N1 is also moderate, indicating that
+the evolutionary pattern of H1N1 strains does not necessarily explain variation
+in observed immune respones. For H3N2, the cartographic correlation was the
+lowest, and we can see in the scatterplot that the two distances become less
+correlated as the distance value becomes larger (on both axes). So for closely
+related H3N2 strains, we can expect the genetic similarity to explain observed
+differences in observed immune responses, but the predictive power of the tree
+distance appears to attenuate as strains drift further away.
 
 Figure 2: main trees
 Panel A: ML tree, panel B: 4 subpanels with the distance trees, if it fits.
@@ -57,6 +130,14 @@ Table 1: table of tree similarity and LRT values
 # Conclusions
 
 # Acknowledgement
+
+We acknowledge the contributions of the following individuals to this work and
+other underlying work (in alphabetical order): Justin Bahl, Lambodhar Damodaran,
+Yang Ge, Savannah Hammerton, Andreas Handel, Ted Ross, Ye Shen, Amanda
+Skarlupka, Meng-Hsuan Sung. This work would not have been possible without the
+contributions of many software developers and methodologists who remain uncited
+due to the 15 citation limit. Finally, we thank the University of Georgia
+graduate school for providing funding.
 
 # References
 

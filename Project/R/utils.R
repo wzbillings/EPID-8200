@@ -40,7 +40,7 @@ tidy_dist_mat <- function(d) {
 
 # Take a racmacs object, extract the coordinates, and return a distance matrix.
 racmaps_map_to_distances <- function(map) {
-	coords <- Racmacs::agCoords(racmacs_map_h1)
+	coords <- Racmacs::agCoords(map)
 	strains <- rownames(coords)
 	x <- coords[, 1]
 	y <- coords[, 2]
@@ -156,6 +156,19 @@ dist.year <- function(names, format = "short") {
 	rownames(out) <- short_names
 	
 	return(out)
+}
+
+# Function to add small random numbers to a matrix
+perturb_matrix <- function(mat, mag = 0.01) {
+	n <- nrow(mat)
+	p <- ncol(mat)
+	s <- n * p
+	noise <- matrix(
+		runif(s, -mag, mag),
+		ncol = p,
+		nrow = n
+	)
+	return(mat + noise)
 }
 
 #### END OF FILE ####

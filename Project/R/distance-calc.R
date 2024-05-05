@@ -61,14 +61,8 @@ dist_pepi_h1 <-
 	dist.pepi(subtype = 'h1')
 
 dist_pepi_h3 <-
-	prot_h1 |>
+	prot_h3 |>
 	dist.pepi(subtype = 'h3')
-
-test1 <- tidy_dist_mat(dist_hamming_h1) |>
-	dplyr::rename(hamming = d)
-test2 <- tidy_dist_mat(dist_pepi_h1) |>
-	dplyr::rename(pepi = d)
-testj <- dplyr::full_join(test1, test2, by = c('Var1', 'Var2'))
 
 # Calculate cartography distance matrix ====
 
@@ -80,6 +74,8 @@ rownames(dist_cart_h1) <- replace_strain_names(rownames(dist_cart_h1))
 
 # Dor it for H3
 dist_cart_h3 <- racmaps_map_to_distances(racmacs_map_h3)
+colnames(dist_cart_h3) <- replace_strain_names(colnames(dist_cart_h3))
+rownames(dist_cart_h3) <- replace_strain_names(rownames(dist_cart_h3))
 
 # Calculate year distance matrix ====
 dist_year_h1 <-
