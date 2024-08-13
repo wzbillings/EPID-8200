@@ -1,0 +1,214 @@
+---
+title: |
+  Comparing antigenic distance metrics for influenza
+subtitle: "EPID 8200 project"
+author: "W. Zane Billings"
+date: last-modified
+date-format: iso
+format:
+  docx:
+    citeproc: false
+    filters:
+      - at: pre-render
+        path: "../../_extensions/andrewheiss/wordcount/citeproc.lua"
+      - at: pre-render
+        path: "../../_extensions/andrewheiss/wordcount/wordcount.lua"
+bibliography: project-refs.bib
+csl: plos-computational-biology.csl
+execute:
+  echo: false
+  freeze: auto
+abstract: |
+  Developing universal influenza vaccines will require improved understanding
+  of how influenza variants differ from each other.
+  We find that temporal distances perform poorly overall,
+  but even sequence distances which match phylogenetic distances well do not
+  match cartographic distances based on actual immune response data.
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+box::use(
+	knitr,
+	here,
+	markdown,
+	rmarkdown,
+	mime
+)
+
+library(flextable)
+```
+
+
+Influenza A virus causes seasonal epidemics worldwide, primarily driven by
+continual evolution of the virus under selective pressure by host immunity
+[@kim2018]. Development of a universal influenza vaccine which can protect
+against novel strains of influenza has many challenges, including surveillance
+of new genomic variants and predicting which will be successful
+[@erbelding2018]. Statistical modeling and phylodynamic approaches are crucial
+tools in the development of a more broadly-protective influenza vaccine, but
+these methods rely on understanding how different each genomic variant of
+influenza actually is from its predecessors [@viboud2020a].
+
+Many different metrics for assessing the antigenic difference between two
+influenza strains currently exist, including phylogenetic methods
+[@durviaux2014], sequence distances [@anderson2018b;
+@gupta2006], and antigenic cartography, which is based on observed
+immunological data [@fonville2016]. To understand the agreement in
+different distance measurements, we obtained data from a cohort
+study that has been previously described [@nunez2017; @abreu2020]. Using
+data from this study, we compared antigenic cartography and sequence methods
+to phylogenetic
+methods.
+
+# Study Methodology
+
+Briefly, our study data [@nunez2017; @abreu2020] consisted of volunteers
+enrolled at three different study sites from 2013 -- 2019 who received a
+FluZone (Sanofi Pasteur) vaccine, and gave pre-vaccination and post-vaccination
+(21 or 28 day) serum samples. The serum samples were used for HAI assays against
+a panel of historical viruses. We computed the Hamming distance [@anderson2018b],
+$p$-Epitope distance [@gupta2006], and the absolute difference in the year of
+isolation of strains [@auladell2022] from the sequences of all influenza
+viruses used for HAI assays, and used Racmacs to compute antigenic cartography
+distances from the HAI data [@wilks2023]. All of our analyses were conducted
+separately for H1N1 and H3N2 strains.
+
+In order to compare with phylogenetic methods, we first computed a multiple
+sequence alignment (MSA) using the MUSCLE algorithm [@edgar2004]. The Hamming
+and $p$-Epitope distances were computed based on this MSA. We had 18
+H1N1 strains and 21 H3N2 strains in total. We then used
+both alignments to construct maximum likelihood (ML) unrooted phylogenetic trees
+using the FLU amino acid substitution model. We extracted the
+cophenetic distances between taxa from the ML trees, and compared these
+distances to our other distance metrics (temporal, Hamming,
+$p$-Epitope, and cartography) using Pearson's correlation.
+
+For each of the four distance metrics, we also built distance-based trees using
+neighbor joining. To compare the methods, we calculated the likelihood of each
+of the distance-based trees, then estimated the
+Shimodaira-Hasegawa test statistic to
+compare each of the distance trees to the ML tree. Finally, we computed the
+Robinson-Foulds distance between each set of trees. Our analyses were implemented
+with R version 4.3.3 [@rcoreteam2024] using the packages
+`phangorn` [@schliep2011] and `msa` [@bodenhofer2015].
+
+# Study Results
+
+We found that all four distance metrics were strongly correlated with cophenetic
+tree distance for H3N2, but for H1N1, only the Hamming and $p$-Epitope distances
+had a strong correlation with the tree distance (@fig-corr). H1N1 has two
+clusters, 2009 pandemic-like (pdm) and non-pdm. The pdm-like strains are
+genetically more similar to the 1918 pandemic strain than to most strains which
+circulated from 1950 -- 2009, so the temporal distance correlation is weak, as
+expected.
+
+```{r}
+#| label: fig-corr
+#| fig-cap: |
+#|   Scatterplots showing the cophenetic tree distance on the x-axis and the
+#|   other distance metrics we calculated on the y-axes. The plots on the
+#|   left are for H1N1 strains and the plots on the right are for H3N2
+#|   strains. The box shows Pearson's correlation (R) along with a 95%
+#|   Wald-type confidence interval.
+
+knitr::include_graphics(here::here("Results", "Figures", "corr-plot.png"))
+```
+
+The cartographic distance correlation for H1N1 is also moderate, indicating that
+the evolutionary pattern of H1N1 strains does not necessarily explain variation
+in observed immune responses. For H3N2, the cartographic correlation was the
+lowest, and the two distances become less correlated as the distance values
+become larger. For closely related H3N2 strains the ability of the tree distance
+to predict differences in immune response appears to attenuate as strains drift
+further away.
+
+The ML trees for both subtypes were able to reconstruct the
+patterns we expect for H1N1 and H3N2 influenza (@fig-mltrees). The H1N1
+strains form two clades, one pdm-like clade which contains SC/18 (the 1918
+pandemic strain), NJ/76 swine influenza, and the modern pdm-like strains. The
+other clade contains the H1N1 strains which circulated between the 1918 pandemic
+and the 2009 pandemic. The H3N2
+strains tend to follow a similar ladder-like pattern, beginning with HK/68 and
+primarily separating by temporal distance, which corroborates the correlations
+between temporal and cophenetic distance (@fig-corr).
+
+```{r}
+#| label: fig-mltrees
+#| fig-cap: |
+#|   Maximum likelihood phylogenetic trees for H1N1 strains (left) and H3N2
+#|   strains (right). Both trees are rooted at the midpoint for display
+#|   purposes, but the root was not optimized during fitting.
+
+knitr::include_graphics(here::here("Results", "Figures", "ml-trees.png"))
+```
+
+For brevity, we do not show all 8 of the distance-based neighbor joining
+phylogenies. However, we conducted SH tests and computed
+the RF distance between each of the distance-based trees and the
+ML tree for the same subtype (@tbl-stats). For the H1N1 strains, the temporal
+distance and cartographic distance trees were different from
+the maximum likelihood tree based on the SH test, and these trees also had a
+much higher RF distance from the ML tree than the Hamming and $p$-Epitope
+distance trees. For the H3N2
+strains, the $p$-Epitope distance tree was different from the
+ML tree, and the cartographic tree was extremely different from the ML
+tree. The ML tree, temporal
+distance, and Hamming distance trees were all similar. All of the
+changes in log likelihood for the H3N2 trees were smaller in magnitude than
+for H1N1. Notably, the temporal distance tree had a much lower likelihood than the ML
+model for H1N1.
+
+```{r}
+#| label: tbl-stats
+#| tbl-cap: |
+#|    Log likelihood of all constructed trees, along with the decrease in log
+#|    likelihood (Δll) from the ML model, the p-value of the Shimodaira-Hasegawa
+#|    test (SH p-value; evaluated on one million bootstrap resamples), and the
+#|    Robinson-Foulds distance from the ML tree (RF distance).
+
+here::here("Results", "Tables", "stat-table.Rds") |>
+	readr::read_rds() |>
+	flextable::width(
+		j = c(1, 2, 3, 4, 5, 6),
+		width = c(0.75, 1.75, 1, 1, 1, 1),
+		unit = "in"
+	)
+```
+
+# Conclusions
+
+Many papers still use the temporal method for calculating antigenic distance.
+However, for H1N1, the temporal distance completely fails to reconstruct any
+genetic changes. For H3N2, the temporal distance was similar to the ML distance.The Hamming and $p$-Epitope distances were similar for both
+subtypes.
+
+The cartographic distance tree was substantially different from the ML tree for
+both H1N1 and H3N2. Since cartographic distance is based on observed immune
+response data, this implies that the hemagglutinin
+sequence is not the only factor in determining individual immune responses. Our
+sample is likely not representative, so similar analyses should be repeated on
+other cohorts. Performing similar analyses using neuraminidase sequence and
+inhibition data would complete our findings well.
+
+Overall we find that temporal methods should be avoided and are not suitable for
+calculating evolutionary distance between influenza strains. Additionally, the
+genetic distance between influenza strains does not match the cartographic
+difference from observed immune response data, indicating that genetic and
+antigenic evolution do not always agree.
+
+# Acknowledgement
+
+We acknowledge the contributions of the following individuals to this work and
+other underlying work (in alphabetical order): Justin Bahl, Lambodhar Damodaran,
+Yang Ge, Savannah Hammerton, Andreas Handel, Ted Ross, Ye Shen, Amanda
+Skarlupka, Meng-Hsuan Sung. This work would not have been possible without the
+contributions of many software developers and methodologists who remain uncited
+due to the 15 citation limit. Finally, we thank the University of Georgia
+graduate school for providing funding.
+
+# References
+
+<!-- END OF FILE -->
